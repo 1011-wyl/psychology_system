@@ -1,0 +1,18 @@
+[Unit]
+Description=Psychology System Spring Boot Backend
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=psychology
+Group=psychology
+WorkingDirectory=/opt/psychology
+EnvironmentFile=/etc/psychology/psychology.env
+ExecStart=/usr/bin/java -jar /opt/psychology/psychology_system-1.0-SNAPSHOT.jar --spring.profiles.active=prod --server.address=127.0.0.1
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cykj.psychology.mapper.SysUserMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.cykj.psychology.entity.SysUser">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="gender" property="gender"/>
+        <result column="age" property="age"/>
+        <result column="phone" property="phone"/>
+        <result column="address" property="address"/>
+        <result column="balance" property="balance"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 查询所有用户 -->
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM sys_user WHERE status = 1
+    </select>
+
+    <!-- 根据ID查询 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM sys_user WHERE id = #{id}
+    </select>
+
+    <!-- 根据用户名查询 -->
+    <select id="selectByUsername" resultMap="BaseResultMap">
+        SELECT * FROM sys_user WHERE username = #{username}
+    </select>
+
+    <!-- 插入用户 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_user (username, password, gender, age, phone, address,
+                              balance, status, create_time, update_time)
+        VALUES (#{username}, #{password}, #{gender}, #{age}, #{phone}, #{address},
+                #{balance}, #{status}, NOW(), NOW())
+    </insert>
+
+    <!-- 更新用户 -->
+    <update id="update">
+        UPDATE sys_user
+        SET username = #{username},
+            password = #{password},
+            gender = #{gender},
+            age = #{age},
+            phone = #{phone},
+            address = #{address},
+            balance = #{balance},
+            status = #{status}
+
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除用户 -->
+    <delete id="deleteById">
+        DELETE FROM sys_user WHERE id = #{id}
+    </delete>
+
+    <update id="updateBalance">
+        UPDATE sys_user SET balance = #{balance}, update_time = NOW() WHERE id = #{id}
+    </update>
+
+</mapper>

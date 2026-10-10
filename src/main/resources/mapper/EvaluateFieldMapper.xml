@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cykj.psychology.mapper.EvaluateFieldMapper">
+
+    <resultMap id="BaseResultMap" type="com.cykj.psychology.entity.EvaluateField">
+        <id column="id" property="id"/>
+        <result column="field_name" property="fieldName"/>
+        <result column="description" property="description"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM evaluate_field WHERE status = 1
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM evaluate_field WHERE id = #{id}
+    </select>
+</mapper>

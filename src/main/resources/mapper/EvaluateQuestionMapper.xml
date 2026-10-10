@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cykj.psychology.mapper.EvaluateQuestionMapper">
+
+    <resultMap id="BaseResultMap" type="com.cykj.psychology.entity.EvaluateQuestion">
+        <id column="id" property="id"/>
+        <result column="field_id" property="fieldId"/>
+        <result column="question_text" property="questionText"/>
+        <result column="option_a" property="optionA"/>
+        <result column="option_b" property="optionB"/>
+        <result column="option_c" property="optionC"/>
+        <result column="option_d" property="optionD"/>
+        <result column="score_a" property="scoreA"/>
+        <result column="score_b" property="scoreB"/>
+        <result column="score_c" property="scoreC"/>
+        <result column="score_d" property="scoreD"/>
+        <result column="sort_order" property="sortOrder"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <select id="selectByFieldId" resultMap="BaseResultMap">
+        SELECT * FROM evaluate_question
+        WHERE field_id = #{fieldId} AND status = 1
+        ORDER BY sort_order
+    </select>
+</mapper>

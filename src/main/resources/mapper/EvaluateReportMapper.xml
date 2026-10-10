@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cykj.psychology.mapper.EvaluateReportMapper">
+
+    <resultMap id="BaseResultMap" type="com.cykj.psychology.entity.EvaluateReport">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="field_id" property="fieldId"/>
+        <result column="total_score" property="totalScore"/>
+        <result column="conclusion" property="conclusion"/>
+        <result column="report_content" property="reportContent"/>
+        <result column="fee" property="fee"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO evaluate_report (user_id, field_id, total_score, conclusion, report_content, fee, create_time)
+        VALUES (#{userId}, #{fieldId}, #{totalScore}, #{conclusion}, #{reportContent}, #{fee}, NOW())
+    </insert>
+
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT * FROM evaluate_report
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM evaluate_report WHERE id = #{id}
+    </select>
+
+    <select id="selectByIdAndUserId" resultMap="BaseResultMap">
+        SELECT * FROM evaluate_report WHERE id = #{id} AND user_id = #{userId}
+    </select>
+</mapper>
