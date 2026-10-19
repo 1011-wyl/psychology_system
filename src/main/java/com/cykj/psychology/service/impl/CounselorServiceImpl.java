@@ -13,6 +13,7 @@ import com.cykj.psychology.mapper.SysCounselorMapper;
 import com.cykj.psychology.mapper.SysUserMapper;
 import com.cykj.psychology.service.CounselorService;
 import com.cykj.psychology.utils.PasswordUtils;
+import com.cykj.psychology.utils.AppointmentTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -116,21 +117,18 @@ public class CounselorServiceImpl implements CounselorService {
 
     @Override
     public List<AppointmentTimeConfig> getTimeConfig(Long counselorId, String date) {
+        AppointmentTimeUtils.parseDate(date);
         return timeConfigMapper.selectByCounselorAndDate(counselorId, date);
     }
 
     @Override
     @Transactional
     public void saveTimeConfig(Long counselorId, String date, List<String> timeSlots) {
-        LocalDate configDate;
-        try {
-            configDate = LocalDate.parse(date);
-        } catch (Exception exception) {
-            throw ApiException.badRequest("日期格式不正确");
-        }
+        LocalDate configDate = AppointmentTimeUtils.parseDate(date);
         if (configDate.isBefore(LocalDate.now())) {
             throw ApiException.badRequest("不能配置过去的日期");
         }
+        AppointmentTimeUtils.validateTimeSlots(timeSlots);
 
         Set<String> uniqueSlots = new LinkedHashSet<>(timeSlots);
         List<AppointmentRecord> activeAppointments = appointmentMapper

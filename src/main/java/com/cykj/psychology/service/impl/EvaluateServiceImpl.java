@@ -99,6 +99,9 @@ public class EvaluateServiceImpl implements EvaluateService {
         } catch (NumberFormatException exception) {
             throw new IllegalStateException("在线评估费用配置不正确", exception);
         }
+        if (fee.signum() < 0) {
+            throw new IllegalStateException("在线评估费用不能为负数");
+        }
 
         SysUser user = userMapper.selectById(userId);
         if (user == null) {

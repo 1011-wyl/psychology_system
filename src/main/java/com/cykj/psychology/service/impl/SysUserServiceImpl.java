@@ -88,6 +88,9 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     @Transactional
     public SysUser recharge(Long userId, BigDecimal amount) {
+        if (amount == null || amount.signum() <= 0) {
+            throw ApiException.badRequest("充值金额必须大于0");
+        }
         if (sysUserMapper.increaseBalance(userId, amount) != 1) {
             throw ApiException.notFound("用户不存在");
         }

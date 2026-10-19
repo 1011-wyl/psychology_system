@@ -10,12 +10,14 @@ import com.cykj.psychology.mapper.AppointmentTimeConfigMapper;
 import com.cykj.psychology.mapper.EvaluateFieldMapper;
 import com.cykj.psychology.mapper.SysCounselorMapper;
 import com.cykj.psychology.service.AppointmentService;
+import com.cykj.psychology.utils.AppointmentTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -64,14 +66,10 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw ApiException.badRequest("咨询领域不存在或已停用");
         }
 
-        LocalDate appointmentDate;
-        try {
-            appointmentDate = LocalDate.parse(date);
-        } catch (Exception exception) {
-            throw ApiException.badRequest("预约日期格式不正确");
-        }
-        if (appointmentDate.isBefore(LocalDate.now())) {
-            throw ApiException.badRequest("不能预约过去的日期");
+        LocalDate appointmentDate = AppointmentTimeUtils.parseDate(date);
+        AppointmentTimeUtils.validateBookable(appointmentDate, timeSlot, LocalDateTime.now());
+        if (counselor.getFee() == null || counselor.getFee().signum() < 0) {
+            throw new IllegalStateException("咨询师费用配置不正确");
         }
 
         boolean alreadyBooked = appointmentMapper.selectByCounselorAndDate(counselorId, date)
@@ -107,6 +105,11 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public List<String> getAvailableTimeSlots(Long counselorId, String date) {
         getCounselorById(counselorId);
+        LocalDate appointmentDate = AppointmentTimeUtils.parseDate(date);
+        LocalDateTime now = LocalDateTime.now();
+        if (appointmentDate.isBefore(now.toLocalDate())) {
+            throw ApiException.badRequest("不能查询过去日期的可预约时间段");
+        }
         Set<String> activeBookings = appointmentMapper.selectByCounselorAndDate(counselorId, date)
                 .stream()
                 .filter(item -> item.getStatus() == 0 || item.getStatus() == 2)
@@ -117,6 +120,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .stream()
                 .filter(config -> config.getIsBooked() == null || config.getIsBooked() == 0)
                 .map(AppointmentTimeConfig::getTimeSlot)
+                .filter(slot -> !AppointmentTimeUtils.hasStarted(appointmentDate, slot, now))
                 .filter(slot -> !activeBookings.contains(slot))
                 .collect(Collectors.toList());
     }

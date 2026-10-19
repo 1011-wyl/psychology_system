@@ -2,6 +2,7 @@ package com.cykj.psychology.service;
 
 import com.cykj.psychology.entity.AccountTransaction;
 import com.cykj.psychology.entity.SysUser;
+import com.cykj.psychology.exception.ApiException;
 import com.cykj.psychology.mapper.AccountTransactionMapper;
 import com.cykj.psychology.mapper.SysUserMapper;
 import com.cykj.psychology.service.impl.SysUserServiceImpl;
@@ -16,6 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -53,5 +57,13 @@ class SysUserServiceImplTest {
         assertEquals(0, transaction.getTransactionType());
         assertEquals(amount, transaction.getAmount());
         assertEquals(updatedUser.getBalance(), transaction.getBalanceAfter());
+    }
+
+    @Test
+    void rechargeRejectsNonPositiveAmountAtServiceBoundary() {
+        assertThrows(ApiException.class, () -> service.recharge(7L, BigDecimal.ZERO));
+        assertThrows(ApiException.class, () -> service.recharge(7L, new BigDecimal("-1.00")));
+        verify(userMapper, never()).increaseBalance(any(), any());
+        verify(transactionMapper, never()).insert(any());
     }
 }

@@ -1,5 +1,7 @@
 package com.cykj.psychology.service;
 
+import com.cykj.psychology.entity.EvaluateField;
+import com.cykj.psychology.entity.EvaluateQuestion;
 import com.cykj.psychology.exception.ApiException;
 import com.cykj.psychology.mapper.AccountTransactionMapper;
 import com.cykj.psychology.mapper.EvaluateFieldMapper;
@@ -14,8 +16,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,5 +52,25 @@ class EvaluateServiceImplTest {
         );
 
         assertEquals(404, exception.getStatus());
+    }
+
+    @Test
+    void negativeEvaluationFeeCannotIncreaseUserBalance() {
+        EvaluateField field = new EvaluateField();
+        field.setStatus(1);
+        EvaluateQuestion question = new EvaluateQuestion();
+        question.setId(9L);
+        question.setScoreA(1);
+        when(fieldMapper.selectById(2L)).thenReturn(field);
+        when(questionMapper.selectByFieldId(2L)).thenReturn(Collections.singletonList(question));
+        when(paramMapper.getValueByKey("在线评估费用")).thenReturn("-10.00");
+
+        assertThrows(
+                IllegalStateException.class,
+                () -> service.submitEvaluation(3L, 2L, Collections.singletonMap("9", "A"))
+        );
+
+        verify(userMapper, never()).deductBalanceIfSufficient(any(), any());
+        verify(reportMapper, never()).insert(any());
     }
 }

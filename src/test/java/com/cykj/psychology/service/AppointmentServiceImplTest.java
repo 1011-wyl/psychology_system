@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -40,6 +41,7 @@ class AppointmentServiceImplTest {
     void refusesBookingWhenAtomicSlotReservationLosesRace() {
         SysCounselor counselor = new SysCounselor();
         counselor.setStatus(1);
+        counselor.setFee(new BigDecimal("100.00"));
         when(counselorMapper.selectById(2L)).thenReturn(counselor);
         EvaluateField field = new EvaluateField();
         field.setStatus(1);
