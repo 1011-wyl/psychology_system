@@ -2,6 +2,41 @@
 
 一个前后端分离的心理咨询平台。后端位于仓库根目录，使用 Spring Boot 2.7、MyBatis 和 MySQL；前端位于 [`frontend/`](frontend/)，使用 Vue 2、Vue Router、Element UI 和 Axios。
 
+## 界面预览
+
+> 以下截图使用本地模拟数据，仅用于展示界面与功能布局，不包含真实用户信息。
+
+### 统一登录入口
+
+<p align="center">
+  <img src="docs/screenshots/login.png" alt="心理咨询平台统一登录入口" width="100%">
+</p>
+
+### 多角色工作台
+
+<table>
+  <tr>
+    <th width="50%">用户端</th>
+    <th width="50%">咨询师端</th>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/user-home.png" alt="用户端工作台"></td>
+    <td><img src="docs/screenshots/counselor-home.png" alt="咨询师端工作台"></td>
+  </tr>
+  <tr>
+    <td align="center">预约咨询、在线评估、报告与账户管理</td>
+    <td align="center">预约处理、时间配置与资金账户</td>
+  </tr>
+</table>
+
+### 管理端
+
+<p align="center">
+  <img src="docs/screenshots/admin-home.png" alt="管理端工作台" width="100%">
+</p>
+
+管理端提供用户、咨询师、预约及统计报表管理。
+
 ## 项目结构
 
 ```text
