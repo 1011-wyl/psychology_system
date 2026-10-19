@@ -1,9 +1,21 @@
 <template>
-  <div class="login-container">
+  <div class="login-container role-login admin-role-login">
+    <section class="role-login-story">
+      <router-link class="role-brand" to="/login">心理咨询与诊断平台</router-link>
+      <div class="role-story-copy">
+        <span>平台管理空间</span>
+        <h1>让每一次服务<br>都清楚有序</h1>
+        <p>集中查看用户、咨询师和预约状态，维护稳定、可信的心理服务流程。</p>
+      </div>
+      <div class="admin-pattern" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+    </section>
     <el-card class="login-card">
       <div class="login-header">
-        <h2>管理员端登录</h2>
-        <p>心理咨询与诊断平台 - 后台管理</p>
+        <span class="login-kicker">安全入口</span>
+        <h2>管理员登录</h2>
+        <p>登录后管理平台服务与运营数据</p>
       </div>
       
       <el-form :model="form" :rules="rules" ref="loginForm">
@@ -29,15 +41,15 @@
         
         <el-form-item>
           <el-button type="primary" @click="handleLogin" :loading="loading" class="login-btn">
-            {{ loading ? '登录中...' : '登录' }}
+            {{ loading ? '登录中...' : '进入管理后台' }}
           </el-button>
         </el-form-item>
       </el-form>
       
       <div class="login-footer">
-        <router-link to="/login">用户登录入口</router-link>
+        <router-link to="/login">用户登录</router-link>
         <span class="divider">|</span>
-        <router-link to="/counselor/login">咨询师登录入口</router-link>
+        <router-link to="/counselor/login">咨询师登录</router-link>
       </div>
       
       <el-alert v-if="errorMsg" :title="errorMsg" type="error" show-icon @close="errorMsg = ''"></el-alert>

@@ -1,132 +1,91 @@
 <template>
-  <el-container class="page-container">
-    <!-- 顶部导航栏 -->
-    <el-header class="app-header">
-      <div class="header-left">
-        <span class="platform-title">心理咨询与诊断平台</span>
-      </div>
-      <div class="header-right">
-        <el-dropdown trigger="click" @command="handleCommand">
-          <div class="user-info">
-            <el-avatar :size="36" icon="el-icon-user-solid" class="user-avatar"></el-avatar>
-            <span class="user-name">用户：{{ username }}</span>
-            <i class="el-icon-arrow-down el-icon--right"></i>
-          </div>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="profile">个人资料</el-dropdown-item>
-            <el-dropdown-item command="logout">退出登录</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div>
-    </el-header>
+  <PortalShell role="user">
+    <div class="page-header">
+      <h2>我的预约</h2>
+      <p>查看您所有的预约记录</p>
+    </div>
 
-    <el-container>
-      <el-aside class="app-aside" width="200px">
-        <el-menu
-          :default-active="activeMenu"
-          class="side-menu"
-          background-color="#1e2a3a"
-          text-color="#bfcbd9"
-          active-text-color="#ffffff"
-          @select="handleMenuSelect"
+    <el-card class="appointment-sheet">
+      <el-table :data="appointmentList" stripe>
+        <el-table-column
+          prop="appointmentDate"
+          label="预约日期"
+          width="120"
+        ></el-table-column>
+        <el-table-column
+          prop="appointmentTime"
+          label="时间段"
+          width="120"
+        ></el-table-column>
+        <el-table-column label="咨询师" width="150">
+          <template slot-scope="scope">
+            {{ getCounselorName(scope.row.counselorId) }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="problemDesc"
+          label="问题描述"
+          show-overflow-tooltip
+        ></el-table-column>
+        <el-table-column prop="fee" label="费用" width="100">
+          <template slot-scope="scope"> ¥ {{ scope.row.fee }} </template>
+        </el-table-column>
+        <el-table-column label="状态" width="100">
+          <template slot-scope="scope">
+            <el-tag :type="getStatusType(scope.row.status)">
+              {{ getStatusText(scope.row.status) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="100">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="viewDetail(scope.row)"
+              >查看详情</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
+
+    <el-dialog title="预约详情" :visible.sync="detailVisible" width="520px">
+      <el-descriptions v-if="selectedAppointment" :column="1" border>
+        <el-descriptions-item label="预约日期">
+          {{ selectedAppointment.appointmentDate }}
+        </el-descriptions-item>
+        <el-descriptions-item label="时间段">
+          {{ selectedAppointment.appointmentTime }}
+        </el-descriptions-item>
+        <el-descriptions-item label="咨询师">
+          {{ getCounselorName(selectedAppointment.counselorId) }}
+        </el-descriptions-item>
+        <el-descriptions-item label="问题描述">
+          {{ selectedAppointment.problemDesc }}
+        </el-descriptions-item>
+        <el-descriptions-item label="费用">
+          ¥ {{ selectedAppointment.fee }}
+        </el-descriptions-item>
+        <el-descriptions-item label="状态">
+          <el-tag :type="getStatusType(selectedAppointment.status)">
+            {{ getStatusText(selectedAppointment.status) }}
+          </el-tag>
+        </el-descriptions-item>
+      </el-descriptions>
+      <span slot="footer">
+        <el-button type="primary" @click="detailVisible = false"
+          >关闭</el-button
         >
-          <el-menu-item index="appointment">
-            <i class="el-icon-date"></i>
-            <span slot="title">我要预约</span>
-          </el-menu-item>
-          <el-menu-item index="myAppointment">
-            <i class="el-icon-list"></i>
-            <span slot="title">我的预约</span>
-          </el-menu-item>
-          <el-menu-item index="report">
-            <i class="el-icon-document"></i>
-            <span slot="title">我的报告</span>
-          </el-menu-item>
-          <el-menu-item index="evaluate">
-            <i class="el-icon-edit"></i>
-            <span slot="title">在线评估</span>
-          </el-menu-item>
-          
-          <el-menu-item index="account">
-            <i class="el-icon-money"></i>
-            <span slot="title">我的账户</span>
-          </el-menu-item>
-        </el-menu>
-      </el-aside>
-
-      <el-main class="app-main">
-        <div class="page-header">
-          <h2>我的预约</h2>
-          <p>查看您所有的预约记录</p>
-        </div>
-
-        <el-table :data="appointmentList" stripe>
-          <el-table-column prop="appointmentDate" label="预约日期" width="120"></el-table-column>
-          <el-table-column prop="appointmentTime" label="时间段" width="120"></el-table-column>
-          <el-table-column label="咨询师" width="150">
-            <template slot-scope="scope">
-              {{ getCounselorName(scope.row.counselorId) }}
-            </template>
-          </el-table-column>
-          <el-table-column prop="problemDesc" label="问题描述" show-overflow-tooltip></el-table-column>
-          <el-table-column prop="fee" label="费用" width="100">
-            <template slot-scope="scope">
-              ¥ {{ scope.row.fee }}
-            </template>
-          </el-table-column>
-          <el-table-column label="状态" width="100">
-            <template slot-scope="scope">
-              <el-tag :type="getStatusType(scope.row.status)">
-                {{ getStatusText(scope.row.status) }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="100">
-            <template slot-scope="scope">
-              <el-button type="text" size="small" @click="viewDetail(scope.row)">查看详情</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-
-        <el-empty v-if="appointmentList.length === 0" description="暂无预约记录"></el-empty>
-
-        <el-dialog title="预约详情" :visible.sync="detailVisible" width="520px">
-          <el-descriptions v-if="selectedAppointment" :column="1" border>
-            <el-descriptions-item label="预约日期">
-              {{ selectedAppointment.appointmentDate }}
-            </el-descriptions-item>
-            <el-descriptions-item label="时间段">
-              {{ selectedAppointment.appointmentTime }}
-            </el-descriptions-item>
-            <el-descriptions-item label="咨询师">
-              {{ getCounselorName(selectedAppointment.counselorId) }}
-            </el-descriptions-item>
-            <el-descriptions-item label="问题描述">
-              {{ selectedAppointment.problemDesc }}
-            </el-descriptions-item>
-            <el-descriptions-item label="费用">
-              ¥ {{ selectedAppointment.fee }}
-            </el-descriptions-item>
-            <el-descriptions-item label="状态">
-              <el-tag :type="getStatusType(selectedAppointment.status)">
-                {{ getStatusText(selectedAppointment.status) }}
-              </el-tag>
-            </el-descriptions-item>
-          </el-descriptions>
-          <span slot="footer">
-            <el-button type="primary" @click="detailVisible = false">关闭</el-button>
-          </span>
-        </el-dialog>
-      </el-main>
-    </el-container>
-  </el-container>
+      </span>
+    </el-dialog>
+  </PortalShell>
 </template>
 
 <script>
+import PortalShell from '@/components/PortalShell.vue'
 import axios from '@/api/http'
 
 export default {
   name: 'MyAppointment',
+  components: { PortalShell },
   data() {
     return {
       activeMenu: 'myAppointment',
@@ -134,7 +93,7 @@ export default {
       appointmentList: [],
       counselorMap: {},
       detailVisible: false,
-      selectedAppointment: null
+      selectedAppointment: null,
     }
   },
   created() {
@@ -156,7 +115,7 @@ export default {
         const res = await axios.get('/appointment/counselors')
         if (res.data.code === 200) {
           const map = {}
-          res.data.data.forEach(c => {
+          res.data.data.forEach((c) => {
             map[c.id] = c.realName
           })
           this.counselorMap = map
@@ -180,11 +139,25 @@ export default {
       return this.counselorMap[id] || '未知'
     },
     getStatusType(status) {
-      const map = { 0: 'warning', 1: 'info', 2: 'success', 3: 'success', 4: 'success', 5: 'danger' }
+      const map = {
+        0: 'warning',
+        1: 'info',
+        2: 'success',
+        3: 'success',
+        4: 'success',
+        5: 'danger',
+      }
       return map[status] || 'info'
     },
     getStatusText(status) {
-      const map = { 0: '待确认', 1: '预约失败', 2: '已确认', 3: '已诊断', 4: '已评价', 5: '被终止' }
+      const map = {
+        0: '待确认',
+        1: '预约失败',
+        2: '已确认',
+        3: '已诊断',
+        4: '已评价',
+        5: '被终止',
+      }
       return map[status] || '未知'
     },
     viewDetail(row) {
@@ -197,7 +170,7 @@ export default {
         myAppointment: '/appointment/list',
         evaluate: '/evaluate',
         report: '/report',
-        account: '/account'
+        account: '/account',
       }
       if (routes[index]) {
         this.$router.push(routes[index])
@@ -212,8 +185,8 @@ export default {
         this.$router.push('/login')
         this.$message.success('已退出登录')
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

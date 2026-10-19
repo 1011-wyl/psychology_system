@@ -1,5 +1,9 @@
 <template>
-  <div>
+  <div class="role-page admin-page">
+    <div class="role-page-heading">
+      <div><span>平台概览</span><h1>管理工作台</h1></div>
+      <p>快速了解平台用户、咨询师与预约运行情况</p>
+    </div>
     <el-row :gutter="20">
       <el-col :span="8">
         <el-card class="stat-card" shadow="hover" @click.native="goToUser">
@@ -40,7 +44,7 @@
         <el-table-column prop="appointmentTime" label="时间" width="120"></el-table-column>
         <el-table-column prop="userId" label="用户ID" width="100"></el-table-column>
         <el-table-column prop="counselorId" label="咨询师ID" width="100"></el-table-column>
-        <el-table-column label="状态" width="100">
+        <el-table-column label="状态" min-width="100">
           <template slot-scope="scope">
             <el-tag :type="getStatusType(scope.row.status)">
               {{ getStatusText(scope.row.status) }}

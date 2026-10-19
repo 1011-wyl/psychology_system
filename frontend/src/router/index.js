@@ -13,13 +13,11 @@ import AppointmentForm from '@/views/AppointmentForm.vue'
 import MyAppointment from '@/views/MyAppointment.vue'
 import Account from '@/views/Account.vue'
 // 咨询师端页面
-import CounselorLogin from '@/views/counselor/CounselorLogin.vue'
 import CounselorLayout from '@/views/counselor/CounselorLayout.vue'
 import CounselorHome from '@/views/counselor/CounselorHome.vue'
 import CounselorAppointment from '@/views/counselor/CounselorAppointment.vue'
 import CounselorTimeConfig from '@/views/counselor/CounselorTimeConfig.vue'
 // 管理员端页面
-import AdminLogin from '@/views/admin/AdminLogin.vue'
 import AdminLayout from '@/views/admin/AdminLayout.vue'
 import AdminHome from '@/views/admin/AdminHome.vue'
 import UserManage from '@/views/admin/UserManage.vue'
@@ -42,7 +40,7 @@ Vue.use(VueRouter)
 
 const routes = [
   { path: '/', redirect: '/login' },
-  { path: '/login', name: 'Login', component: Login },
+  { path: '/login', name: 'Login', component: Login, props: { role: 'user' } },
   { path: '/register', name: 'Register', component: Register },
   { path: '/home', name: 'Home', component: Home, meta: { auth: 'user' } },
   { path: '/evaluate', name: 'Evaluate', component: Evaluate, meta: { auth: 'user' } },
@@ -56,7 +54,7 @@ const routes = [
   { path: '/account', name: 'Account', component: Account, meta: { auth: 'user' } },
 
   // 咨询师端路由
-  { path: '/counselor/login', name: 'CounselorLogin', component: CounselorLogin },
+  { path: '/counselor/login', name: 'CounselorLogin', component: Login, props: { role: 'counselor' } },
   {
     path: '/counselor',
     component: CounselorLayout,
@@ -71,7 +69,7 @@ const routes = [
   },
 
     // 管理员端路由
-  { path: '/admin/login', name: 'AdminLogin', component: AdminLogin },
+  { path: '/admin/login', name: 'AdminLogin', component: Login, props: { role: 'admin' } },
   {
     path: '/admin',
     component: AdminLayout,

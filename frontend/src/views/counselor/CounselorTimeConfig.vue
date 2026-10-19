@@ -1,8 +1,12 @@
 <template>
-  <div>
+  <div class="role-page counselor-page">
+    <div class="role-page-heading">
+      <div><span>日程管理</span><h1>可预约时间</h1></div>
+      <p>按日期维护开放时段，让来访者看到准确安排</p>
+    </div>
     <el-card>
       <div slot="header">
-        <span>可预约时间设置</span>
+        <span>选择日期与时间段</span>
       </div>
       
       <el-form inline>

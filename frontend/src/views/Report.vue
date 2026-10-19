@@ -1,103 +1,73 @@
 <template>
-  <el-container class="report-container">
-    <!-- 顶部导航栏 -->
-    <el-header class="app-header">
-      <div class="header-left">
-        <span class="platform-title">心理咨询与诊断平台</span>
-      </div>
-      <div class="header-right">
-        <el-dropdown trigger="click" @command="handleCommand">
-          <div class="user-info">
-            <el-avatar :size="36" icon="el-icon-user-solid" class="user-avatar"></el-avatar>
-            <span class="user-name">用户：{{ username }}</span>
-            <i class="el-icon-arrow-down el-icon--right"></i>
-          </div>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="profile">个人资料</el-dropdown-item>
-            <el-dropdown-item command="logout">退出登录</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div>
-    </el-header>
+  <PortalShell role="user">
+    <div class="report-header-card">
+      <h2>我的评估报告</h2>
+      <p>查看所有历史评估记录，了解您的心理健康状况变化</p>
+    </div>
 
-    <el-container>
-      <!-- 左侧侧边栏 -->
-      <el-aside class="app-aside" width="200px">
-        <el-menu
-          :default-active="activeMenu"
-          class="side-menu"
-          background-color="#1e2a3a"
-          text-color="#bfcbd9"
-          active-text-color="#ffffff"
-          @select="handleMenuSelect"
+    <!-- 报告列表 -->
+    <el-row :gutter="20" class="report-grid">
+      <el-col
+        :xs="24"
+        :sm="12"
+        :md="8"
+        :lg="6"
+        v-for="report in reportList"
+        :key="report.id"
+      >
+        <el-card
+          class="report-card"
+          shadow="hover"
+          role="link"
+          tabindex="0"
+          @keydown.enter.native="viewReport(report.id)"
+          @click.native="viewReport(report.id)"
         >
-          <el-menu-item index="appointment">
-            <i class="el-icon-date"></i>
-            <span slot="title">我要预约</span>
-          </el-menu-item>
-          <el-menu-item index="report">
-            <i class="el-icon-document"></i>
-            <span slot="title">我的报告</span>
-          </el-menu-item>
-          <el-menu-item index="evaluate">
-            <i class="el-icon-edit"></i>
-            <span slot="title">在线评估</span>
-          </el-menu-item>
-          <el-menu-item index="account">
-            <i class="el-icon-money"></i>
-            <span slot="title">我的账户</span>
-          </el-menu-item>
-        </el-menu>
-      </el-aside>
+          <div class="report-date">{{ formatDate(report.createTime) }}</div>
+          <div class="report-field">{{ getFieldName(report.fieldId) }}</div>
+          <div class="report-score">
+            得分：<span :class="getScoreClass(report.totalScore)">{{
+              report.totalScore
+            }}</span>
+          </div>
+          <div
+            class="report-conclusion"
+            :class="getConclusionClass(report.totalScore)"
+          >
+            {{ report.conclusion }}
+          </div>
+          <div class="report-link">查看详情 →</div>
+        </el-card>
+      </el-col>
+    </el-row>
 
-      <!-- 右侧主内容区 -->
-      <el-main class="app-main">
-        <div class="report-header-card">
-          <h2>我的评估报告</h2>
-          <p>查看所有历史评估记录，了解您的心理健康状况变化</p>
-        </div>
+    <!-- 空状态 -->
+    <el-empty
+      v-if="reportList.length === 0"
+      description="暂无评估报告，快去完成一次评估吧！"
+    ></el-empty>
 
-        <!-- 报告列表 -->
-        <el-row :gutter="20" class="report-grid">
-          <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="report in reportList" :key="report.id">
-            <el-card class="report-card" shadow="hover" @click.native="viewReport(report.id)">
-              <div class="report-date">{{ formatDate(report.createTime) }}</div>
-              <div class="report-field">{{ getFieldName(report.fieldId) }}</div>
-              <div class="report-score">
-                得分：<span :class="getScoreClass(report.totalScore)">{{ report.totalScore }}</span>
-              </div>
-              <div class="report-conclusion" :class="getConclusionClass(report.totalScore)">
-                {{ report.conclusion }}
-              </div>
-              <div class="report-link">查看详情 →</div>
-            </el-card>
-          </el-col>
-        </el-row>
-
-        <!-- 空状态 -->
-        <el-empty v-if="reportList.length === 0" description="暂无评估报告，快去完成一次评估吧！"></el-empty>
-
-        <!-- 分页 -->
-        <div class="pagination-wrapper" v-if="total > pageSize">
-          <el-pagination
-            background
-            layout="prev, pager, next"
-            :total="total"
-            :page-size="pageSize"
-            :current-page.sync="currentPage"
-            @current-change="handlePageChange"
-          ></el-pagination>
-        </div>
-      </el-main>
-    </el-container>
-  </el-container>
+    <!-- 分页 -->
+    <div class="pagination-wrapper" v-if="total > pageSize">
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size="pageSize"
+        :current-page.sync="currentPage"
+        @current-change="handlePageChange"
+      ></el-pagination>
+    </div>
+  </PortalShell>
 </template>
 
 <script>
+import PortalShell from '@/components/PortalShell.vue'
 import axios from '@/api/http'
 
 export default {
   name: 'UserReport',
+  components: { PortalShell },
   data() {
     return {
       activeMenu: 'report',
@@ -106,7 +76,7 @@ export default {
       fieldMap: {},
       currentPage: 1,
       pageSize: 8,
-      total: 0
+      total: 0,
     }
   },
   created() {
@@ -128,7 +98,7 @@ export default {
         const res = await axios.get('/evaluate/fields')
         if (res.data.code === 200) {
           const map = {}
-          res.data.data.forEach(field => {
+          res.data.data.forEach((field) => {
             map[field.id] = field.fieldName
           })
           this.fieldMap = map
@@ -155,7 +125,10 @@ export default {
     formatDate(dateStr) {
       if (!dateStr) return ''
       const date = new Date(dateStr)
-      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+        2,
+        '0'
+      )}-${String(date.getDate()).padStart(2, '0')}`
     },
     getScoreClass(score) {
       if (score <= 10) return 'score-good'
@@ -177,7 +150,7 @@ export default {
         appointment: '/appointment',
         report: '/report',
         evaluate: '/evaluate',
-        account: '/account'
+        account: '/account',
       }
       if (routes[index]) {
         this.$router.push(routes[index])
@@ -195,8 +168,8 @@ export default {
         this.$router.push('/login')
         this.$message.success('已退出登录')
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

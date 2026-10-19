@@ -1,0 +1,651 @@
+/* V3: a physical store facade. The brand sits on the shop sign; the form is its service window. */
+.refill-gate {
+  --refill-ink: #19253e;
+  --refill-yellow: #ffda3d;
+  --refill-blue: #2449e8;
+  --refill-paper: #fffcf0;
+  position: relative;
+  min-height: 100svh;
+  min-height: max(760px, 100svh);
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--refill-ink);
+  background: #e9ecf2;
+  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+.refill-gate a {
+  color: inherit;
+  text-decoration: none;
+}
+.refill-gate button,
+.refill-gate input {
+  font: inherit;
+}
+.refill-gate button,
+.refill-gate a {
+  -webkit-tap-highlight-color: transparent;
+}
+.refill-gate button {
+  cursor: pointer;
+}
+.refill-gate button:disabled {
+  cursor: wait;
+}
+.refill-gate :focus-visible {
+  outline: 3px solid #2449e8;
+  outline-offset: 5px;
+}
+.refill-scene {
+  position: absolute;
+  inset: -8px;
+  z-index: -2;
+  overflow: hidden;
+  pointer-events: none;
+  transition: transform 1.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.store-backdrop {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+.scene-light {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+      ellipse at 24% 57%,
+      rgba(255, 224, 124, 0.21),
+      transparent 25%
+    ),
+    radial-gradient(
+      ellipse at 83% 49%,
+      rgba(255, 249, 214, 0.25),
+      transparent 20%
+    );
+  mix-blend-mode: soft-light;
+  animation: store-glow 9s ease-in-out infinite alternate;
+}
+.store-reflection {
+  position: absolute;
+  top: 35%;
+  height: 40%;
+  width: 20%;
+  overflow: hidden;
+  border-radius: 22px;
+  opacity: 0.28;
+}
+.store-reflection--left {
+  left: 10%;
+}
+.store-reflection--right {
+  right: 10%;
+}
+.store-reflection::after {
+  position: absolute;
+  inset: -30% -80%;
+  content: '';
+  background: linear-gradient(
+    115deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.7) 43%,
+    transparent 50%
+  );
+  animation: glass-light 15s ease-in-out infinite;
+}
+.store-reflection--right::after {
+  animation-delay: -7s;
+}
+.store-lamp {
+  position: absolute;
+  top: 31%;
+  left: 24%;
+  width: 8%;
+  height: 14%;
+  background: radial-gradient(
+    ellipse,
+    rgba(255, 231, 141, 0.6),
+    transparent 70%
+  );
+  mix-blend-mode: screen;
+  animation: store-glow 7s ease-in-out infinite alternate;
+}
+.refill-header {
+  position: absolute;
+  z-index: 5;
+  top: 1.7%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+}
+.refill-roles {
+  position: relative;
+  display: flex;
+  padding: 5px;
+  border: 1px solid rgba(25, 37, 62, 0.25);
+  border-radius: 99px;
+  background: rgba(255, 252, 240, 0.96);
+  box-shadow: 0 3px 10px rgba(25, 37, 62, 0.08);
+}
+.refill-roles a {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 90px;
+  min-height: 37px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 99px;
+  transition: color 0.22s;
+}
+.refill-roles a.is-selected {
+  color: var(--refill-paper);
+}
+.role-slider {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  width: 90px;
+  height: 37px;
+  border-radius: 99px;
+  background: var(--refill-ink);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.store-sign {
+  position: absolute;
+  top: 9.7%;
+  left: 50%;
+  width: 34%;
+  height: 8.4%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transform: translateX(-50%);
+  margin: 0;
+  color: #203b69;
+  font-size: clamp(27px, 2.65vw, 46px);
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.6);
+}
+.store-sign-dot {
+  position: relative;
+  width: 0.65em;
+  height: 0.65em;
+  border: 2px solid #203b69;
+  border-radius: 50%;
+}
+.store-sign-dot::before {
+  position: absolute;
+  content: '';
+  width: 40%;
+  height: 22%;
+  left: 30%;
+  top: 36%;
+  border-bottom: 2px solid #203b69;
+  border-radius: 50%;
+}
+.refill-stage {
+  position: absolute;
+  inset: 32% 0 12%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  padding: 12px 24px 16px;
+}
+.receipt-wrap {
+  --refill-ink: #171b3b;
+  --refill-paper: #fff9e9;
+  position: relative;
+  z-index: 3;
+  width: clamp(318px, 23vw, 420px);
+  max-width: 100%;
+  animation: receipt-arrive 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.receipt-shadow {
+  position: absolute;
+  inset: 6px -6px -7px 6px;
+  z-index: -1;
+  border-radius: 6px;
+  background: var(--refill-ink);
+}
+.receipt-clip {
+  position: absolute;
+  z-index: 3;
+  top: -11px;
+  left: calc(50% - 24px);
+  width: 48px;
+  height: 19px;
+  border: 1px solid var(--refill-ink);
+  border-radius: 3px;
+  background: #ff8e79;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.3);
+}
+.receipt-clip::before {
+  position: absolute;
+  content: '';
+  width: 23px;
+  height: 12px;
+  border: 1px solid var(--refill-ink);
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+  left: 11px;
+  top: -11px;
+  background: var(--refill-paper);
+}
+.refill-receipt {
+  position: relative;
+  padding: 34px 26px 21px;
+  border: 1px solid var(--refill-ink);
+  border-radius: 6px;
+  background: var(--refill-paper);
+  color: var(--refill-ink);
+}
+.refill-receipt::before {
+  position: absolute;
+  inset: 7px;
+  border: 1px solid rgba(23, 27, 59, 0.08);
+  border-radius: 3px;
+  pointer-events: none;
+  content: '';
+}
+.refill-receipt h2 {
+  margin: 0;
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.4;
+}
+.refill-form {
+  margin-top: 28px;
+}
+.refill-field {
+  position: relative;
+  margin-bottom: 23px;
+}
+.refill-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.field-box {
+  display: flex;
+  align-items: center;
+  height: 47px;
+  padding: 0 12px;
+  border: 1px solid #c9c6bb;
+  border-radius: 4px;
+  background: #fffef9;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.field-box:focus-within {
+  border-color: var(--refill-blue);
+  box-shadow: 0 0 0 3px rgba(36, 73, 232, 0.1);
+}
+.field-box > svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  stroke: #96919a;
+  fill: none;
+  stroke-width: 1.4;
+}
+.field-box input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0 10px;
+  border: 0;
+  outline: none !important;
+  background: transparent;
+  color: var(--refill-ink);
+  font-size: 13px;
+}
+.field-box input::placeholder {
+  color: #aaa5aa;
+}
+.password-toggle {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 36px;
+  flex: 0 0 30px;
+  border: 0;
+  color: #96919a;
+  background: transparent;
+  border-radius: 3px;
+}
+.password-toggle svg {
+  width: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+}
+.has-error .field-box {
+  border-color: #c43b31;
+}
+.field-error {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 4px);
+  color: #b52e27;
+  font-size: 10px;
+}
+.request-error {
+  margin: -2px 0 15px;
+  padding: 10px;
+  background: #ffe2d7;
+  color: #a52724;
+  font-size: 12px;
+  line-height: 1.6;
+  border-left: 3px solid #c43b31;
+}
+.refill-submit {
+  display: flex;
+  justify-content: center;
+  gap: 13px;
+  align-items: center;
+  width: 100%;
+  height: 47px;
+  margin: 3px 0 0;
+  padding: 0 19px;
+  border: 1px solid var(--refill-ink);
+  border-radius: 4px;
+  background: var(--refill-yellow);
+  box-shadow: 2px 3px 0 var(--refill-ink);
+  color: var(--refill-ink);
+  transition: transform 0.14s, box-shadow 0.14s, background 0.14s;
+  font-size: 14px;
+  font-weight: 600;
+}
+.refill-submit svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  transition: transform 0.2s;
+}
+.refill-submit:active {
+  transform: translateY(2px);
+  box-shadow: 1px 1px 0 var(--refill-ink);
+}
+.refill-submit:disabled {
+  background: #e9d68d;
+  color: #68635b;
+}
+.submit-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: refill-spin 0.7s linear infinite;
+}
+.receipt-footer {
+  display: flex;
+  min-height: 44px;
+  padding-top: 14px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 11px;
+  color: #807b80;
+}
+.receipt-footer a {
+  color: #2449cf;
+  font-weight: 600;
+}
+.bottle-display {
+  position: absolute;
+  width: 14vw;
+  aspect-ratio: 1.094/1;
+  z-index: 2;
+  pointer-events: none;
+  bottom: 9%;
+}
+.bottle-display--mint {
+  left: 15%;
+  transform: rotate(-5deg);
+}
+.bottle-display--coral {
+  right: 15%;
+  transform: rotate(5deg);
+}
+.bottle-float {
+  height: 100%;
+  animation: bottle-float 8s ease-in-out infinite;
+}
+.bottle-display--coral .bottle-float {
+  animation-delay: -3s;
+}
+.bottle-art {
+  width: 100%;
+  height: 100%;
+  background-image: url('../assets/login/refill-bottles-v2.webp');
+  background-size: 200% 200%;
+  background-repeat: no-repeat;
+}
+.bottle-art--mint {
+  background-position: 0 0;
+}
+.bottle-art--coral {
+  background-position: 0 100%;
+}
+.bottle-ground {
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: 0;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(23, 27, 59, 0.16);
+  filter: blur(4px);
+}
+.receipt-copy-enter-active,
+.receipt-copy-leave-active {
+  transition: opacity 0.13s, transform 0.13s;
+}
+.receipt-copy-enter {
+  opacity: 0;
+  transform: translateY(5px);
+}
+.receipt-copy-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+.refill-gate.is-paused .bottle-float,
+.refill-gate.is-paused .scene-light,
+.refill-gate.is-paused .store-lamp,
+.refill-gate.is-paused .store-reflection::after,
+.refill-gate:has(.refill-form:focus-within) .bottle-float {
+  animation-play-state: paused;
+}
+@keyframes store-glow {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 0.95;
+  }
+}
+@keyframes glass-light {
+  0%,
+  15% {
+    transform: translateX(-40%);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  60%,
+  100% {
+    transform: translateX(40%);
+    opacity: 0;
+  }
+}
+@keyframes bottle-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(1deg);
+  }
+}
+@keyframes refill-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes receipt-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .refill-submit:not(:disabled):hover {
+    background: #ffe66b;
+  }
+  .refill-submit:not(:disabled):hover svg {
+    transform: translateX(3px);
+  }
+  .refill-roles a:not(.is-selected):hover,
+  .receipt-footer a:hover {
+    color: #1638be;
+  }
+  .receipt-footer a:hover {
+    text-decoration: underline;
+  }
+}
+@media (max-width: 1200px) {
+  .refill-scene {
+    width: 1300px;
+    left: 50%;
+    right: auto;
+    margin-left: -650px;
+  }
+  .receipt-wrap {
+    width: 318px;
+  }
+  .refill-receipt {
+    padding: 28px 26px 17px;
+  }
+  .refill-receipt h2 {
+    font-size: 25px;
+  }
+  .refill-form {
+    margin-top: 21px;
+  }
+  .refill-field {
+    margin-bottom: 22px;
+  }
+  .store-sign {
+    font-size: 30px;
+  }
+  .bottle-display {
+    width: 140px;
+    bottom: 7%;
+  }
+  .bottle-display--mint {
+    left: 12%;
+  }
+  .bottle-display--coral {
+    right: 12%;
+  }
+}
+@media (max-width: 800px) {
+  .refill-gate {
+    min-height: max(800px, 100svh);
+  }
+  .refill-scene {
+    width: 1300px;
+    left: 50%;
+    right: auto;
+    margin-left: -650px;
+  }
+  .store-sign {
+    width: 360px;
+    top: 9.8%;
+    font-size: 31px;
+  }
+  .bottle-display {
+    width: 120px;
+    bottom: 0;
+    z-index: 2;
+  }
+  .bottle-display--mint {
+    left: -15px;
+  }
+  .bottle-display--coral {
+    right: -15px;
+  }
+  .refill-stage {
+    inset: 32% 0 12%;
+  }
+  .receipt-wrap {
+    width: 318px;
+  }
+  .store-sign-dot {
+    display: none;
+  }
+}
+@media (max-width: 480px) {
+  .refill-header {
+    top: 1.7%;
+  }
+  .refill-roles a {
+    width: 81px;
+    min-height: 35px;
+  }
+  .role-slider {
+    width: 81px;
+    height: 35px;
+  }
+  .store-sign {
+    font-size: 29px;
+    top: 9.8%;
+    height: 8%;
+  }
+  .refill-stage {
+    padding: 10px 25px 15px;
+  }
+  .refill-receipt {
+    padding: 29px 24px 15px;
+  }
+  .field-box input {
+    font-size: 16px;
+  }
+  .bottle-display {
+    width: 95px;
+    bottom: -7%;
+    z-index: 4;
+  }
+  .bottle-display--mint {
+    left: -10px;
+  }
+  .bottle-display--coral {
+    right: -10px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .refill-gate *,
+  .refill-gate *::before,
+  .refill-gate *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+  .refill-scene {
+    transform: none !important;
+  }
+}

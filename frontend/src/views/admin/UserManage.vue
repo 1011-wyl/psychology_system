@@ -1,8 +1,12 @@
 <template>
-  <div>
+  <div class="role-page admin-page">
+    <div class="role-page-heading">
+      <div><span>成员与权限</span><h1>用户管理</h1></div>
+      <p>查看账户状态并处理必要的安全操作</p>
+    </div>
     <el-card>
       <div slot="header">
-        <span>用户管理</span>
+        <span>用户列表</span>
       </div>
       
       <el-table :data="userList" stripe>

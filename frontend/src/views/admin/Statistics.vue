@@ -1,5 +1,9 @@
 <template>
-  <div>
+  <div class="role-page admin-page">
+    <div class="role-page-heading">
+      <div><span>运营数据</span><h1>统计报表</h1></div>
+      <p>查看平台当前的核心服务规模</p>
+    </div>
     <el-row :gutter="20">
       <el-col :span="8">
         <el-card class="stat-card">

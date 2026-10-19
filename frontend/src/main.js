@@ -43,6 +43,7 @@ import Table from 'element-ui/lib/table'
 import TableColumn from 'element-ui/lib/table-column'
 import Tag from 'element-ui/lib/tag'
 import 'element-ui/lib/theme-chalk/index.css'
+import './styles/portal-theme.css'
 import http, { configureHttp } from './api/http'
 
 const elementComponents = [

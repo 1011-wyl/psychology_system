@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="role-page counselor-page detail-role-page">
     <el-card>
       <div slot="header">
         <span>预约详情</span>

@@ -1,5 +1,9 @@
 <template>
-  <div>
+  <div class="role-page counselor-page">
+    <div class="role-page-heading">
+      <div><span>服务记录</span><h1>资金账户</h1></div>
+      <p>查看咨询收入与已完成服务</p>
+    </div>
     <el-card class="balance-card" shadow="hover">
       <div class="balance-header">
         <span class="balance-title">账户余额</span>

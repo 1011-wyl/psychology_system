@@ -1,118 +1,99 @@
 <template>
-  <el-container class="evaluate-container">
-    <!-- 顶部导航栏 -->
-    <el-header class="app-header">
-      <div class="header-left">
-        <span class="platform-title">心理咨询与诊断平台</span>
-      </div>
-      <div class="header-right">
-        <el-dropdown trigger="click" @command="handleCommand">
-          <div class="user-info">
-            <el-avatar :size="36" icon="el-icon-user-solid" class="user-avatar"></el-avatar>
-            <span class="user-name">用户：{{ username }}</span>
-            <i class="el-icon-arrow-down el-icon--right"></i>
-          </div>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="profile">个人资料</el-dropdown-item>
-            <el-dropdown-item command="logout">退出登录</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div>
-    </el-header>
+  <PortalShell role="user">
+    <div class="evaluate-container">
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <el-card class="header-card" shadow="never">
+            <h2>在线心理评估</h2>
+            <p>选择一个领域，了解最近的心理状态。</p>
+          </el-card>
+        </el-col>
+      </el-row>
 
-    <el-container>
-      <!-- 左侧侧边栏 -->
-      <el-aside class="app-aside" width="200px">
-        <el-menu
-          :default-active="activeMenu"
-          class="side-menu"
-          background-color="#1e2a3a"
-          text-color="#bfcbd9"
-          active-text-color="#ffffff"
-          @select="handleMenuSelect"
+      <el-row :gutter="20" class="field-grid">
+        <el-col
+          :xs="24"
+          :sm="12"
+          :md="8"
+          v-for="field in fieldList"
+          :key="field.id"
         >
-          <el-menu-item index="appointment">
-            <i class="el-icon-date"></i>
-            <span slot="title">我要预约</span>
-          </el-menu-item>
-          <el-menu-item index="report">
-            <i class="el-icon-document"></i>
-            <span slot="title">我的报告</span>
-          </el-menu-item>
-          <el-menu-item index="evaluate">
-            <i class="el-icon-edit"></i>
-            <span slot="title">在线评估</span>
-          </el-menu-item>
-          <el-menu-item index="account">
-            <i class="el-icon-money"></i>
-            <span slot="title">我的账户</span>
-          </el-menu-item>
-        </el-menu>
-      </el-aside>
+          <el-card
+            class="field-card"
+            shadow="hover"
+            @click.native="startEvaluate(field.id, field.fieldName)"
+          >
+            <div class="field-icon">
+              <i :class="getFieldIcon(field.fieldName)"></i>
+            </div>
+            <div class="field-name">{{ field.fieldName }}</div>
+            <div class="field-desc">
+              {{ field.description || '心理健康评估' }}
+            </div>
+            <el-button
+              type="primary"
+              size="small"
+              plain
+              @click.stop="startEvaluate(field.id, field.fieldName)"
+              >开始评估</el-button
+            >
+          </el-card>
+        </el-col>
+      </el-row>
 
-      <!-- 右侧主内容区 -->
-      <el-main class="app-main">
-        <div class="evaluate-container">
-          <el-row :gutter="20">
-            <el-col :span="24">
-              <el-card class="header-card" shadow="never">
-                <h2>在线心理评估</h2>
-                <p>请选择您想要评估的领域，系统将根据您的答题情况生成专业的心理评估报告</p>
-              </el-card>
-            </el-col>
-          </el-row>
-
-          <el-row :gutter="20" class="field-grid">
-            <el-col :xs="24" :sm="12" :md="8" v-for="field in fieldList" :key="field.id">
-              <el-card class="field-card" shadow="hover" @click.native="startEvaluate(field.id, field.fieldName)">
-                <div class="field-icon">
-                  <i :class="getFieldIcon(field.fieldName)"></i>
-                </div>
-                <div class="field-name">{{ field.fieldName }}</div>
-                <div class="field-desc">{{ field.description || '心理健康评估' }}</div>
-                <el-button type="primary" size="small" plain>开始评估</el-button>
-              </el-card>
-            </el-col>
-          </el-row>
-
-          <!-- 历史评估记录 -->
-          <el-row :gutter="20" class="history-section">
-            <el-col :span="24">
-              <el-card class="history-card" shadow="never">
-                <div slot="header" class="card-header">
-                  <span>历史评估记录</span>
-                  <el-link type="primary" @click="goToReport">查看全部报告</el-link>
-                </div>
-                <el-table :data="historyReports" stripe style="width: 100%">
-                  <el-table-column prop="createTime" label="评估日期" width="180"></el-table-column>
-                  <el-table-column prop="fieldName" label="评估领域"></el-table-column>
-                  <el-table-column prop="conclusion" label="评测结果"></el-table-column>
-                  <el-table-column label="操作" width="100">
-                    <template slot-scope="scope">
-                      <el-button type="text" size="small" @click="viewReport(scope.row.id)">查看报告</el-button>
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </el-card>
-            </el-col>
-          </el-row>
-        </div>
-      </el-main>
-    </el-container>
-  </el-container>
+      <!-- 历史评估记录 -->
+      <el-row :gutter="20" class="history-section">
+        <el-col :span="24">
+          <el-card class="history-card" shadow="never">
+            <div slot="header" class="card-header">
+              <span>历史评估记录</span>
+              <el-link type="primary" @click="goToReport">查看全部报告</el-link>
+            </div>
+            <el-table :data="historyReports" stripe style="width: 100%">
+              <el-table-column
+                prop="createTime"
+                label="评估日期"
+                width="180"
+              ></el-table-column>
+              <el-table-column
+                prop="fieldName"
+                label="评估领域"
+              ></el-table-column>
+              <el-table-column
+                prop="conclusion"
+                label="评测结果"
+              ></el-table-column>
+              <el-table-column label="操作" width="100">
+                <template slot-scope="scope">
+                  <el-button
+                    type="text"
+                    size="small"
+                    @click="viewReport(scope.row.id)"
+                    >查看报告</el-button
+                  >
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-card>
+        </el-col>
+      </el-row>
+    </div>
+  </PortalShell>
 </template>
 
 <script>
+import PortalShell from '@/components/PortalShell.vue'
 import axios from '@/api/http'
 
 export default {
   name: 'UserEvaluate',
+  components: { PortalShell },
   data() {
     return {
       activeMenu: 'evaluate',
       username: '',
       fieldList: [],
-      historyReports: []
+      historyReports: [],
     }
   },
   created() {
@@ -150,16 +131,16 @@ export default {
     },
     getFieldIcon(fieldName) {
       const iconMap = {
-        '焦虑评估': 'el-icon-warning',
-        '抑郁评估': 'el-icon-s-platform',
-        '压力评估': 'el-icon-s-data'
+        焦虑评估: 'el-icon-warning',
+        抑郁评估: 'el-icon-s-platform',
+        压力评估: 'el-icon-s-data',
       }
       return iconMap[fieldName] || 'el-icon-document'
     },
     startEvaluate(fieldId, fieldName) {
       this.$router.push({
         path: '/evaluate/question',
-        query: { fieldId, fieldName }
+        query: { fieldId, fieldName },
       })
     },
     viewReport(id) {
@@ -170,7 +151,7 @@ export default {
         appointment: '/appointment',
         report: '/report',
         evaluate: '/evaluate',
-        account: '/account'
+        account: '/account',
       }
       if (routes[index]) {
         this.$router.push(routes[index])
@@ -188,8 +169,8 @@ export default {
         this.$router.push('/login')
         this.$message.success('已退出登录')
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

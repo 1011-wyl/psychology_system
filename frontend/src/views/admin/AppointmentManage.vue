@@ -1,8 +1,12 @@
 <template>
-  <div>
+  <div class="role-page admin-page">
+    <div class="role-page-heading">
+      <div><span>服务流程</span><h1>预约管理</h1></div>
+      <p>查看全平台预约状态并处理异常记录</p>
+    </div>
     <el-card>
       <div slot="header">
-        <span>预约管理</span>
+        <span>全部预约</span>
       </div>
       
       <el-table :data="appointmentList" stripe>

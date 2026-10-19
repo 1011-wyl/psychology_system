@@ -1,8 +1,12 @@
 <template>
-  <div>
+  <div class="role-page counselor-page">
+    <div class="role-page-heading">
+      <div><span>咨询安排</span><h1>预约列表</h1></div>
+      <p>确认预约，并在咨询完成后填写诊断建议</p>
+    </div>
     <el-card>
       <div slot="header">
-        <span>预约列表</span>
+        <span>全部预约</span>
       </div>
       
       <el-table :data="appointmentList" stripe>

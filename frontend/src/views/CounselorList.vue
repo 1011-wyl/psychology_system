@@ -1,96 +1,54 @@
 <template>
-  <el-container class="page-container">
-    <!-- 顶部导航栏 -->
-    <el-header class="app-header">
-      <div class="header-left">
-        <span class="platform-title">心理咨询与诊断平台</span>
-      </div>
-      <div class="header-right">
-        <el-dropdown trigger="click" @command="handleCommand">
-          <div class="user-info">
-            <el-avatar :size="36" icon="el-icon-user-solid" class="user-avatar"></el-avatar>
-            <span class="user-name">用户：{{ username }}</span>
-            <i class="el-icon-arrow-down el-icon--right"></i>
+  <PortalShell role="user">
+    <div class="page-header">
+      <h2>咨询师列表</h2>
+      <p>选择您信任的咨询师，预约线下咨询</p>
+    </div>
+
+    <el-row :gutter="20" v-loading="loading">
+      <el-col
+        :xs="24"
+        :sm="12"
+        :md="8"
+        v-for="item in counselorList"
+        :key="item.id"
+      >
+        <el-card class="counselor-card" shadow="hover">
+          <div class="counselor-avatar">
+            <el-avatar :size="64" :src="item.avatar">{{
+              (item.realName || '询').slice(-1)
+            }}</el-avatar>
           </div>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="profile">个人资料</el-dropdown-item>
-            <el-dropdown-item command="logout">退出登录</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </div>
-    </el-header>
-
-    <el-container>
-      <!-- 左侧侧边栏 -->
-      <el-aside class="app-aside" width="200px">
-        <el-menu
-          :default-active="activeMenu"
-          class="side-menu"
-          background-color="#1e2a3a"
-          text-color="#bfcbd9"
-          active-text-color="#ffffff"
-          @select="handleMenuSelect"
-        >
-          <el-menu-item index="appointment">
-            <i class="el-icon-date"></i>
-            <span slot="title">我要预约</span>
-          </el-menu-item>
-          <el-menu-item index="myAppointment">
-            <i class="el-icon-list"></i>
-            <span slot="title">我的预约</span>
-          </el-menu-item>
-          <el-menu-item index="report">
-            <i class="el-icon-document"></i>
-            <span slot="title">我的报告</span>
-          </el-menu-item>
-          <el-menu-item index="evaluate">
-            <i class="el-icon-edit"></i>
-            <span slot="title">在线评估</span>
-          </el-menu-item>
-          <el-menu-item index="account">
-            <i class="el-icon-money"></i>
-            <span slot="title">我的账户</span>
-          </el-menu-item>
-        </el-menu>
-      </el-aside>
-
-      <!-- 右侧主内容区 -->
-      <el-main class="app-main">
-        <div class="page-header">
-          <h2>咨询师列表</h2>
-          <p>选择您信任的咨询师，预约线下咨询</p>
-        </div>
-
-        <el-row :gutter="20">
-          <el-col :xs="24" :sm="12" :md="8" v-for="item in counselorList" :key="item.id">
-            <el-card class="counselor-card" shadow="hover">
-              <div class="counselor-avatar">
-                <el-avatar :size="80" :src="item.avatar || defaultAvatar"></el-avatar>
-              </div>
-              <div class="counselor-name">{{ item.realName }}</div>
-              <div class="counselor-title">{{ item.title }}</div>
-              <div class="counselor-desc">{{ item.description }}</div>
-              <div class="counselor-price">¥ {{ item.fee }} / 次</div>
-              <el-button type="primary" @click="bookCounselor(item)">立即预约</el-button>
-            </el-card>
-          </el-col>
-        </el-row>
-      </el-main>
-    </el-container>
-  </el-container>
+          <div class="counselor-name">{{ item.realName }}</div>
+          <div class="counselor-title">{{ item.title }}</div>
+          <div class="counselor-desc">{{ item.description }}</div>
+          <div class="counselor-price">¥ {{ item.fee }} / 次</div>
+          <el-button type="primary" @click="bookCounselor(item)"
+            >立即预约</el-button
+          >
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-empty
+      v-if="!loading && counselorList.length === 0"
+      description="暂无可预约的咨询师"
+    ></el-empty>
+  </PortalShell>
 </template>
 
 <script>
+import PortalShell from '@/components/PortalShell.vue'
 import axios from '@/api/http'
 
 export default {
   name: 'CounselorList',
+  components: { PortalShell },
   data() {
     return {
       activeMenu: 'appointment',
       username: '',
       counselorList: [],
-      defaultAvatar: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+      loading: true,
     }
   },
   created() {
@@ -115,6 +73,8 @@ export default {
       } catch (error) {
         console.error('获取咨询师失败:', error)
         this.$message.error('加载咨询师列表失败')
+      } finally {
+        this.loading = false
       }
     },
     bookCounselor(item) {
@@ -123,8 +83,8 @@ export default {
         query: {
           counselorId: item.id,
           counselorName: item.realName,
-          fee: item.fee
-        }
+          fee: item.fee,
+        },
       })
     },
     handleMenuSelect(index) {
@@ -133,7 +93,7 @@ export default {
         myAppointment: '/appointment/list',
         evaluate: '/evaluate',
         report: '/report',
-        account: '/account'
+        account: '/account',
       }
       if (routes[index]) {
         this.$router.push(routes[index])
@@ -148,8 +108,8 @@ export default {
         this.$router.push('/login')
         this.$message.success('已退出登录')
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

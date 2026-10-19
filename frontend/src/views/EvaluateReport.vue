@@ -1,50 +1,62 @@
 <template>
-  <div class="report-container">
-    <el-card class="report-card" shadow="hover">
-      <div class="report-header">
-        <i class="el-icon-document-checked"></i>
-        <h2>心理评估报告</h2>
-      </div>
+  <PortalShell role="user">
+    <div class="report-container">
+      <el-card class="report-card" shadow="hover">
+        <div class="report-header">
+          <i class="el-icon-document-checked"></i>
+          <h2>心理评估报告</h2>
+        </div>
 
-      <div class="report-info">
-        <el-descriptions :column="2" border>
-          <el-descriptions-item label="评估领域">{{ fieldName }}</el-descriptions-item>
-          <el-descriptions-item label="评估时间">{{ reportTime }}</el-descriptions-item>
-          <el-descriptions-item label="测评总分">
-            <span :class="scoreClass">{{ totalScore }} 分</span>
-          </el-descriptions-item>
-          <el-descriptions-item label="评估结论">
-            <span :class="conclusionClass">{{ conclusion }}</span>
-          </el-descriptions-item>
-        </el-descriptions>
-      </div>
+        <div class="report-info">
+          <el-descriptions :column="2" border>
+            <el-descriptions-item label="评估领域">{{
+              fieldName
+            }}</el-descriptions-item>
+            <el-descriptions-item label="评估时间">{{
+              reportTime
+            }}</el-descriptions-item>
+            <el-descriptions-item label="测评总分">
+              <span :class="scoreClass">{{ totalScore }} 分</span>
+            </el-descriptions-item>
+            <el-descriptions-item label="评估结论">
+              <span :class="conclusionClass">{{ conclusion }}</span>
+            </el-descriptions-item>
+          </el-descriptions>
+        </div>
 
-      <div class="report-content">
-        <h3>报告内容</h3>
-        <p>{{ reportContent }}</p>
-      </div>
+        <div class="report-content">
+          <h3>报告内容</h3>
+          <p>{{ reportContent }}</p>
+        </div>
 
-      <div class="report-footer">
-        <el-button type="primary" plain @click="goToEvaluate">继续评估</el-button>
-        <el-button type="success" @click="goToReports">查看全部报告</el-button>
-        <el-button @click="goToHome">返回首页</el-button>
-      </div>
-    </el-card>
-  </div>
+        <div class="report-footer">
+          <el-button type="primary" plain @click="goToEvaluate"
+            >继续评估</el-button
+          >
+          <el-button type="success" @click="goToReports"
+            >查看全部报告</el-button
+          >
+          <el-button @click="goToHome">返回首页</el-button>
+        </div>
+      </el-card>
+    </div>
+  </PortalShell>
 </template>
 
 <script>
+import PortalShell from '@/components/PortalShell.vue'
 import axios from '@/api/http'
 
 export default {
   name: 'EvaluateReport',
+  components: { PortalShell },
   data() {
     return {
       reportId: null,
       fieldName: '',
       totalScore: 0,
       conclusion: '',
-      reportTime: ''
+      reportTime: '',
     }
   },
   computed: {
@@ -69,29 +81,29 @@ export default {
       } else {
         return '您的心理状况需要及时干预。强烈建议您尽快预约专业心理咨询师或前往医院心理科就诊，获取专业的帮助和支持。'
       }
-    }
+    },
   },
   async created() {
-  this.reportId = this.$route.query.reportId
-  this.fieldName = this.$route.query.fieldName || '心理评估'
-  
-  if (this.reportId) {
-    try {
-      const response = await axios.get(`evaluate/report/${this.reportId}`)
-      if (response.data.code === 200) {
-        const report = response.data.data
-        this.totalScore = report.totalScore
-        this.conclusion = report.conclusion
-        this.reportTime = this.formatDate(new Date(report.createTime))
+    this.reportId = this.$route.query.reportId
+    this.fieldName = this.$route.query.fieldName || '心理评估'
+
+    if (this.reportId) {
+      try {
+        const response = await axios.get(`evaluate/report/${this.reportId}`)
+        if (response.data.code === 200) {
+          const report = response.data.data
+          this.totalScore = report.totalScore
+          this.conclusion = report.conclusion
+          this.reportTime = this.formatDate(new Date(report.createTime))
+        }
+      } catch (error) {
+        console.error('获取报告失败:', error)
       }
-    } catch (error) {
-      console.error('获取报告失败:', error)
-    }
-  } else {
-    // 从 query 参数获取
-    this.totalScore = parseInt(this.$route.query.totalScore) || 0
-    this.conclusion = this.$route.query.conclusion || '评估完成'
-    this.reportTime = this.formatDate(new Date())
+    } else {
+      // 从 query 参数获取
+      this.totalScore = parseInt(this.$route.query.totalScore) || 0
+      this.conclusion = this.$route.query.conclusion || '评估完成'
+      this.reportTime = this.formatDate(new Date())
     }
   },
   methods: {
@@ -111,8 +123,8 @@ export default {
     },
     goToHome() {
       this.$router.push('/home')
-    }
-  }
+    },
+  },
 }
 </script>
 

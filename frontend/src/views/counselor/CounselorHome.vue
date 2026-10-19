@@ -1,5 +1,9 @@
 <template>
-  <div>
+  <div class="role-page counselor-page">
+    <div class="role-page-heading">
+      <div><span>今日工作台</span><h1>今天的咨询安排</h1></div>
+      <p>查看待确认预约与近期服务进度</p>
+    </div>
     <el-row :gutter="20">
       <el-col :span="8">
         <el-card class="stat-card">

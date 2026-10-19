@@ -1,8 +1,12 @@
 <template>
-  <div>
+  <div class="role-page admin-page">
+    <div class="role-page-heading">
+      <div><span>专业服务团队</span><h1>咨询师管理</h1></div>
+      <p>维护咨询师资料、服务费用与启用状态</p>
+    </div>
     <el-card>
       <div slot="header">
-        <span>咨询师管理</span>
+        <span>咨询师列表</span>
         <el-button type="primary" size="small" style="float: right" @click="openAddDialog">添加咨询师</el-button>
       </div>
       
